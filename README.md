@@ -24,18 +24,18 @@ gh repo clone 12Tall/gh-skill "$install_dir"
 
 这是对 Pi 的项目级约束，不是 Git hook，不拦截你在终端手动执行的 `git commit`。
 
-从目标项目启动 `pi`（不需要 `--skill`）。先用 `/skill:gh-skill 只读查看当前仓库和默认分支` 验证加载。
+从目标项目启动 `pi`（不需要 `--skill`）。先用 `/skill:gh-skill 只读审查本地改动，不访问 GitHub` 验证加载。
 
 ## 快速上手
 
-复制下面的指令到 Pi，把示例编号换成目标项目里的编号：
+复制下面的指令到 Pi。涉及 GitHub 的示例，请先把 `OWNER/REPO` 和示例编号换成实际仓库与编号；本地自审不访问 GitHub。
 
 | 任务 | 指令 |
 | --- | --- |
-| 整理待办 | `/skill:gh-skill 按标签和负责人汇总当前仓库未关闭的 Issue，只读` |
-| 从 Issue 开 Draft PR | `/skill:gh-skill 实现 Issue #12，本地检查通过后开 Draft PR，并查看 CI` |
+| 整理待办 | `/skill:gh-skill 按标签和负责人汇总 GitHub 仓库 OWNER/REPO 未关闭的 Issue，只读` |
+| 从 Issue 开 Draft PR | `/skill:gh-skill 实现 GitHub 仓库 OWNER/REPO 的 Issue #12，本地检查通过后在该仓库开 Draft PR，并只读查看 CI，不合并` |
 | 提交前自审 | `/skill:gh-skill 按开发清单审查本地改动，指出耦合、重复规则和漏测；只读，不提交` |
-| 诊断 PR 的 CI | `/skill:gh-skill 检查 PR #42 最新提交的 CI；如果失败，汇报失败步骤和关键日志，不重跑` |
+| 诊断 PR 的 CI | `/skill:gh-skill 只读检查 GitHub 仓库 OWNER/REPO 的 PR #42 最新提交的 CI；如果失败，汇报失败步骤和关键日志，不重跑` |
 
 [开发与自审清单](references/development.md)随 Skill 一起安装和更新，无需额外配置。通过上面的指令，即使没有 GitHub Issue 或 PR，也能用它审查本地改动。
 
