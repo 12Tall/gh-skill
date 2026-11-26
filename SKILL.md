@@ -29,7 +29,7 @@ Treat a tangent as a discussion, not an implicit task switch. When it has a conc
 
 ## Development and pre-commit review
 
-Read the bundled [development checklist](references/development.md) before implementing an Issue, preparing a commit, or performing a requested pre-commit review. It covers acceptance criteria, design and coupling, shared rules, testing, and diff review. A review-only request is read-only and does not require a GitHub lookup or login.
+Read the bundled [development checklist](references/development.md) before implementing an Issue, preparing a commit, or performing a requested pre-commit review. It covers acceptance criteria, design and coupling, shared rules, testing, and diff review. Before every Git commit you create, including amend, review the intended staged diff and run relevant checks. Stop and report material findings or blocked verification rather than committing. A review-only request is read-only and does not require a GitHub lookup or login; review does not grant commit authority.
 
 ## From issue to PR
 

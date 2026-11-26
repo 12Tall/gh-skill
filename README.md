@@ -16,6 +16,14 @@ gh repo clone 12Tall/gh-skill "$install_dir"
 
 排除规则只写入本地 Git 配置目录，不改项目的 `.gitignore`，也不把 Skill 提交到目标项目。更新时运行 `git -C .agents/skills/gh-skill pull --ff-only`，然后在 Pi 中执行 `/reload` 或重启 Pi。
 
+**启用步骤还包括项目指引。** 将下面一行加入目标项目根目录的 `AGENTS.md`（没有就创建，不覆盖已有内容）。Pi 每次启动都会读项目指引；只克隆 Skill 并不能保证模型在提交前自动选用它。若不想共享这次配置，不要暂存该文件的改动。
+
+```text
+本项目启用 gh-skill：每次由 Pi 创建 Git 提交前（包括 amend），必须先读取 .agents/skills/gh-skill/references/development.md，审查将要提交的 diff 并运行相关检查；有实质问题或验证受阻时先停下汇报，不要提交。自审不等于提交授权。
+```
+
+这是对 Pi 的项目级约束，不是 Git hook，不拦截你在终端手动执行的 `git commit`。
+
 从目标项目启动 `pi`（不需要 `--skill`）。先用 `/skill:gh-skill 只读查看当前仓库和默认分支` 验证加载。
 
 ## 快速上手
