@@ -26,6 +26,17 @@ gh repo clone 12Tall/gh-skill "$install_dir"
 
 从目标项目启动 `pi`（不需要 `--skill`）。先用 `/skill:gh-skill 只读审查本地改动，不访问 GitHub` 验证加载。
 
+## 可选：约 60% 时自动压缩
+
+在**已信任的目标项目**根目录执行以下命令，为该项目显式启用随 Skill 提供的 Pi 扩展，然后重启 Pi。仅克隆 Skill 不会加载扩展。扩展具有 Pi 进程的权限，请先审阅代码。
+
+```sh
+mkdir -p .pi/extensions
+ln -s ../../.agents/skills/gh-skill/pi/context-compaction.js .pi/extensions/gh-skill-context-compaction.js
+```
+
+扩展在一轮工作完成后按**当前模型**的上下文窗口检查估算用量，达到约 60% 时请求压缩。同一轮超阈值状态不会反复请求。如果 Pi 已禁用自动压缩，扩展也不会触发。它不改全局设置，也不替换 Pi 原生的溢出恢复或自动压缩；因此不是每个 token 都检查的硬阈值。只想本地启用时，不要提交该链接；关闭时移除该链接并重启 Pi。
+
 ## 快速上手
 
 复制下面的指令到 Pi。涉及 GitHub 的示例，请先把 `OWNER/REPO` 和示例编号换成实际仓库与编号；本地自审不访问 GitHub。
