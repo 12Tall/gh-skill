@@ -7,6 +7,25 @@ from urllib.parse import unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def prose_lines(markdown):
+    """Yield lines outside top-level Markdown code fences."""
+    fence = None
+    for line in markdown.splitlines():
+        marker = re.fullmatch(r" {0,3}(`{3,}|~{3,})(.*)", line)
+        if fence is not None:
+            if marker:
+                run, suffix = marker.groups()
+                if run[0] == fence[0] and len(run) >= len(fence) and not suffix.strip():
+                    fence = None
+            continue
+        if marker:
+            run, suffix = marker.groups()
+            if run[0] == "~" or "`" not in suffix:
+                fence = run
+                continue
+        yield line
+
+
 def main():
     text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
     frontmatter = re.match(r"\A---\n(.*?)\n---\n", text, re.DOTALL)
@@ -21,7 +40,8 @@ def main():
 
     missing = []
     for doc in (ROOT / "SKILL.md", ROOT / "README.md", *(ROOT / "references").rglob("*.md")):
-        for target in re.findall(r"\]\(([^\s)]+)\)", doc.read_text(encoding="utf-8")):
+        prose = "\n".join(prose_lines(doc.read_text(encoding="utf-8")))
+        for target in re.findall(r"\]\(([^\s)]+)\)", prose):
             link = urlsplit(target)
             if link.scheme or link.netloc or not link.path:
                 continue
