@@ -39,4 +39,6 @@ gh repo clone 12Tall/gh-skill "$install_dir"
 
 [开发与自审清单](references/development.md)随 Skill 一起安装和更新，无需额外配置。通过上面的指令，即使没有 GitHub Issue 或 PR，也能用它审查本地改动。
 
+有关开发习惯、对话主线和项目外资源授权的约定，见[常见问题](references/faq.md)。
+
 整理、诊断和仅审查默认只读。只说「实现 Issue」时，Pi 在本地修改和验证后停下，不自动提交或推送。明确要求开 Draft PR 时，才进入提交、推送和开 PR 的流程。加标签、指派、评论和手动重跑也需要明确授权；合并与生产部署要单独确认。
