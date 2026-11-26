@@ -6,6 +6,10 @@
 - If pursuing the tangent would pause or expand the task, ask whether to switch or defer. Without that decision, do not start edits or open a PR for the tangent. A proposed idea is not an accepted decision.
 - After a long interruption, recover the last agreed goal, decisions, and next step from the conversation and any existing project state notes. If they conflict or the goal is unclear, ask one focused question rather than guessing. Do not create a tracking file unless requested.
 
+### Context checkpoint
+
+If the harness exposes reliable context usage and it reaches roughly 60%, prepare a short handoff at the next safe pause. Preserve the agreed goal, decisions, authorization scope, pending work, verification results, and one concrete next step. Keep side topics only if they affect the main task. Resume the agreed task after compaction; a summary is not permission to expand scope. If usage is unavailable, do not guess a percentage; use the same handoff when pausing a long task. This is a Skill-level checkpoint, not a setting that triggers or changes the harness's automatic compaction.
+
 ## Before editing
 
 - State the goal and how to verify it. A small change needs only a short acceptance check. For changes across modules or to public interfaces, explain the affected callers, compatibility risks, and verification plan before editing.
