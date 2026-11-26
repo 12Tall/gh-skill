@@ -25,7 +25,7 @@ When asked to create a new repository, use `master` as its initial and default b
 
 ## From issue to PR
 
-Read the issue and repository guidance, then make the smallest relevant change on a topic branch. Ask only when an ambiguity would materially change the implementation. Run the project's checks and review the diff.
+Read the issue, repository guidance, and [development checklist](references/development.md) before implementing or preparing a commit. Define how to verify the goal, then make the smallest relevant change on a topic branch. Ask only when an ambiguity would materially change the implementation. Run the project's checks and review the diff.
 
 - **“Work on this issue”**: Stop after local implementation and validation. Report the changes and check results; don't commit, push, or open a PR without authorization.
 - **“Work on this issue and open a draft PR”**: After local validation succeeds, commit, push the topic branch, and open the draft without asking at each step. If a local check fails, investigate first; if unresolved, report it and don't push by default.
