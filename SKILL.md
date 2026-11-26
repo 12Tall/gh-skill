@@ -17,6 +17,8 @@ compatibility: Requires Git and an authenticated GitHub CLI (gh).
 - Pull requests: `gh pr list -R "$repo"`; `gh pr view "$pr" -R "$repo"`; `gh pr diff "$pr" -R "$repo"`; `gh pr checks "$pr" -R "$repo"`.
 - Before a remote write, verify the target and the intended change. Proceed only if the user requested that action. Ask before merging, deleting, force-pushing, or triggering a production deployment. Don't change secrets or permissions as part of routine CI troubleshooting.
 
+For filtered Issue and PR lists, review and CI summaries, or requested label, assignment, and comment updates, read [the triage reference](references/triage.md).
+
 ## Create a repository
 
 When asked to create a new repository, use `master` as its initial and default branch unless the user requests another name. For a new local repository, use `git init -b master`; when publishing local history, make sure `master` is the first branch pushed and don't push unrelated commits. For an empty GitHub repository, don't rely on the account's naming preference: verify the default branch after initialization with `gh repo view "$repo" --json defaultBranchRef`. If needed, set it with `gh repo edit "$repo" --default-branch master` after `master` exists. If no initial commit is authorized, report that the branch still needs to be initialized. This convention only applies to newly created repositories; don't rename branches in existing repositories unless asked.
