@@ -1,5 +1,11 @@
 # Development and pre-commit review
 
+## Conversation checkpoint
+
+- Answer side questions without silently replacing the last agreed task. When the tangent is resolved or starts crowding out the task, briefly summarize its outcome and state one concrete next step on the main task. Don't repeat the checkpoint every turn.
+- If pursuing the tangent would pause or expand the task, ask whether to switch or defer. Without that decision, do not start edits or open a PR for the tangent. A proposed idea is not an accepted decision.
+- After a long interruption, recover the last agreed goal, decisions, and next step from the conversation and any existing project state notes. If they conflict or the goal is unclear, ask one focused question rather than guessing. Do not create a tracking file unless requested.
+
 ## Before editing
 
 - State the goal and how to verify it. A small change needs only a short acceptance check. For changes across modules or to public interfaces, explain the affected callers, compatibility risks, and verification plan before editing.
