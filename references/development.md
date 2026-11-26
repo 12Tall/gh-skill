@@ -9,6 +9,7 @@
 
 - Follow local conventions. Prefer clear names and straightforward control flow. Extract a function when naming a distinct responsibility makes the caller easier to read or lets you test that behavior separately; don't split code just to make it shorter.
 - Keep the diff focused. Change the module that owns the behavior instead of spreading its rules across callers. Avoid speculative abstractions and unrelated cleanup.
+- Give shared rules one source of truth. Ask: if this value changes, must these callers change together? If yes, define it in the module that owns the rule; put environment-dependent values in configuration, and read facts like a target repository's default branch from the system that owns them. If callers also repeat the same decision logic, share a function. Keep coincidentally equal values separate: this repository's default branch and the default for newly created repositories are independent policies. Avoid a catch-all constants file.
 - Test the acceptance condition; for bug fixes, add a regression test when practical. Use the project's existing checks.
 
 ## Before committing
