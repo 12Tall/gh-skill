@@ -16,12 +16,16 @@ gh repo clone 12Tall/gh-skill "$install_dir"
 
 排除规则只写入本地 Git 配置目录，不改项目的 `.gitignore`，也不把 Skill 提交到目标项目。更新时运行 `git -C .agents/skills/gh-skill pull --ff-only`，然后在 Pi 中执行 `/reload` 或重启 Pi。
 
-从目标项目启动 `pi`（不需要 `--skill`）。先用 `/skill:gh-skill 只读查看当前仓库和默认分支` 验证加载，再试试：
+从目标项目启动 `pi`（不需要 `--skill`）。先用 `/skill:gh-skill 只读查看当前仓库和默认分支` 验证加载。
 
-- `/skill:gh-skill 看看当前仓库有什么未关闭的 Issue`
-- `/skill:gh-skill 排查 PR #42 的失败检查，只读，不重跑`
-- `/skill:gh-skill 根据 Issue #12 给出实现计划，先不要改代码`
+## 快速上手
 
-## 开发流程
+复制下面的指令到 Pi，把示例编号换成目标项目里的编号：
 
-从 Issue 理解需求，确认范围，修改并本地验证，再按请求推送分支、创建 PR 和检查 CI。默认先诊断，不擅自修改远程状态。
+| 任务 | 指令 |
+| --- | --- |
+| 整理待办 | `/skill:gh-skill 按标签和负责人汇总当前仓库未关闭的 Issue，只读` |
+| 从 Issue 开 Draft PR | `/skill:gh-skill 实现 Issue #12，本地检查通过后开 Draft PR，并查看 CI` |
+| 诊断 PR 的 CI | `/skill:gh-skill 检查 PR #42 最新提交的 CI；如果失败，汇报失败步骤和关键日志，不重跑` |
+
+整理和诊断默认只读。只说「实现 Issue」时，Pi 在本地修改和验证后停下，不自动提交或推送。明确要求开 Draft PR 时，才进入提交、推送和开 PR 的流程。加标签、指派、评论和手动重跑也需要明确授权；合并与生产部署要单独确认。
