@@ -19,7 +19,14 @@ compatibility: Requires Git and an authenticated GitHub CLI (gh).
 
 ## From issue to PR
 
-Read the issue and repository guidance, agree on scope when ambiguous, then make the smallest relevant change on a topic branch. Run the project's checks and review the diff. When requested, commit and push the branch, then open a PR with `gh pr create -R "$repo" --base "$base" --head "$branch" --title "$title" --body-file "$pr_body_file"`. Include the issue link, summary, and checks actually run. Use `--draft` when requested. Report the PR URL and CI status separately; don't claim pending checks passed.
+Read the issue and repository guidance, then make the smallest relevant change on a topic branch. Ask only when an ambiguity would materially change the implementation. Run the project's checks and review the diff.
+
+- **“Work on this issue”**: Stop after local implementation and validation. Report the changes and check results; don't commit, push, or open a PR without authorization.
+- **“Work on this issue and open a draft PR”**: After local validation succeeds, commit, push the topic branch, and open the draft without asking at each step. If a local check fails, investigate first; if unresolved, report it and don't push by default.
+
+To open a draft, use `gh pr create -R "$repo" --base "$base" --head "$branch" --title "$title" --body-file "$pr_body_file" --draft`. Include the issue link, summary, and checks actually run. Check CI with `gh pr checks` and report the PR URL and CI status separately; don't claim pending checks passed. Merging and production deployment always require separate confirmation.
+
+If CI fails after opening a requested draft PR, inspect the logs. If the failure is clearly caused by the current change, make at most one follow-up fix, validate it locally, push it to the same branch, and report the updated CI status. If the failure is unrelated or unclear, local validation fails, or the fix would require changing Actions configuration, permissions, or secrets, stop and report instead. A request to investigate CI alone is read-only unless the user explicitly requests a change.
 
 ## GitHub Actions
 

@@ -1,0 +1,28 @@
+name: Skill smoke test
+
+on:
+  workflow_dispatch:
+    inputs:
+      fail_first_attempt:
+        description: Fail the first attempt to test log inspection and reruns
+        type: boolean
+        default: false
+
+permissions: {}
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check dispatch and attempt number
+        shell: bash
+        env:
+          FAIL_FIRST_ATTEMPT: ${{ inputs.fail_first_attempt }}
+        run: |
+          echo "Smoke test attempt: $GITHUB_RUN_ATTEMPT"
+          if [[ "$FAIL_FIRST_ATTEMPT" == true && "$GITHUB_RUN_ATTEMPT" == 1 ]]; then
+            echo 'Intentional first-attempt failure for gh-skill testing.' >&2
+            exit 1
+          fi
+          echo 'Smoke test passed.'
