@@ -25,5 +25,3 @@ gh repo clone 12Tall/gh-skill "$install_dir"
 ## 开发流程
 
 从 Issue 理解需求，确认范围，修改并本地验证，再按请求推送分支、创建 PR 和检查 CI。默认先诊断，不擅自修改远程状态。
-
-[Intentional probe](references/stale-ci-probe-missing.md)
