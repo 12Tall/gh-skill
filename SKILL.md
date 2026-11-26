@@ -23,6 +23,10 @@ For filtered Issue and PR lists, review and CI summaries, or requested label, as
 
 When asked to create a new repository, use `master` as its initial and default branch unless the user requests another name. For a new local repository, use `git init -b master`; when publishing local history, make sure `master` is the first branch pushed and don't push unrelated commits. For an empty GitHub repository, don't rely on the account's naming preference: verify the default branch after initialization with `gh repo view "$repo" --json defaultBranchRef`. If needed, set it with `gh repo edit "$repo" --default-branch master` after `master` exists. If no initial commit is authorized, report that the branch still needs to be initialized. This convention only applies to newly created repositories; don't rename branches in existing repositories unless asked.
 
+## Stay aligned with the current task
+
+Treat a tangent as a discussion, not an implicit task switch. When it has a conclusion, name the last agreed goal and its concrete next step. Ask before turning the tangent into new work that changes scope or pauses the current task. After a long interruption, use the [conversation checkpoint](references/development.md#conversation-checkpoint) to recover the main thread.
+
 ## Development and pre-commit review
 
 Read the bundled [development checklist](references/development.md) before implementing an Issue, preparing a commit, or performing a requested pre-commit review. It covers acceptance criteria, design and coupling, shared rules, testing, and diff review. A review-only request is read-only and does not require a GitHub lookup or login.
