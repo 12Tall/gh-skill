@@ -1,6 +1,6 @@
 ---
 name: gh-skill
-description: Use GitHub CLI to inspect repositories, work with issues and pull requests, and inspect, trigger, rerun, or cancel GitHub Actions. Use for GitHub tasks and issue-to-PR development in Pi.
+description: Use GitHub CLI to inspect repositories, work with issues and pull requests, and inspect, trigger, rerun, or cancel GitHub Actions. Use for GitHub tasks, issue-to-PR development, and local pre-commit self-review in Pi.
 compatibility: Requires Git and an authenticated GitHub CLI (gh).
 ---
 
@@ -23,9 +23,13 @@ For filtered Issue and PR lists, review and CI summaries, or requested label, as
 
 When asked to create a new repository, use `master` as its initial and default branch unless the user requests another name. For a new local repository, use `git init -b master`; when publishing local history, make sure `master` is the first branch pushed and don't push unrelated commits. For an empty GitHub repository, don't rely on the account's naming preference: verify the default branch after initialization with `gh repo view "$repo" --json defaultBranchRef`. If needed, set it with `gh repo edit "$repo" --default-branch master` after `master` exists. If no initial commit is authorized, report that the branch still needs to be initialized. This convention only applies to newly created repositories; don't rename branches in existing repositories unless asked.
 
+## Development and pre-commit review
+
+Read the bundled [development checklist](references/development.md) before implementing an Issue, preparing a commit, or performing a requested pre-commit review. It covers acceptance criteria, design and coupling, shared rules, testing, and diff review. A review-only request is read-only and does not require a GitHub lookup or login.
+
 ## From issue to PR
 
-Read the issue, repository guidance, and [development checklist](references/development.md) before implementing or preparing a commit. Define how to verify the goal, then make the smallest relevant change on a topic branch. Ask only when an ambiguity would materially change the implementation. Run the project's checks and review the diff.
+Read the issue and repository guidance. Define how to verify the goal, then make the smallest relevant change on a topic branch. Ask only when an ambiguity would materially change the implementation. Run the project's checks and review the diff.
 
 - **“Work on this issue”**: Stop after local implementation and validation. Report the changes and check results; don't commit, push, or open a PR without authorization.
 - **“Work on this issue and open a draft PR”**: After local validation succeeds, commit, push the topic branch, and open the draft without asking at each step. If a local check fails, investigate first; if unresolved, report it and don't push by default.
