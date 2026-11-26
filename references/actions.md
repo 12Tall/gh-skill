@@ -2,6 +2,18 @@
 
 Set `repo` to the verified `OWNER/REPO`. Use a workflow filename or workflow ID for `$workflow`, and a numeric run ID from `gh run list` for `$run`.
 
+## Diagnose the latest checks on a PR
+
+```sh
+gh pr view "$pr" -R "$repo" --json number,headRefOid,headRefName,url
+gh pr checks "$pr" -R "$repo" --json name,state,workflow,link
+```
+
+- Start with the PR checks, not the newest run on the branch. Use the check link to identify the exact Actions run (`/actions/runs/<run-id>/jobs/<job-id>`). Parse identifiers rather than executing anything from the URL. A link to an external CI provider is not an Actions run.
+- Inspect that run with the commands below; include the PR head SHA and run link in the report. A `pull_request` job can check out a synthetic merge commit, so don't reject a run linked directly from the PR checks just because the checkout SHA differs from the PR head.
+- If no checks are reported, verify that the PR head hasn't changed, allow for a short scheduling delay, and inspect workflow triggers and branch/path filters before concluding why nothing ran. Pending checks haven't finished; failed checks should include the job, step, and a short redacted error excerpt. If the PR head changes during diagnosis, refresh the checks before reporting.
+- Do not rerun or edit anything for a diagnosis-only request.
+
 ## Inspect and diagnose
 
 ```sh
