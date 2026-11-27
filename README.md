@@ -146,6 +146,8 @@ node scripts/check-skill.mjs
 
 项目内只读子进程探针、真实模型测试步骤和验证边界见 [Subagent 测试说明](docs/SUBAGENT_TESTING.md)。普通单元测试不会调用模型。
 
+正在完善的只读子 Agent 已有独立的[文件访问层](docs/READ_ONLY_WORKSPACE.md)：统一限制读取、列表和搜索范围，并测试敏感路径及链接绕过。它尚未接入 SDK 或进程管理，也不会自动替换旧探针的原生工具。
+
 ## 快速上手
 
 复制下面的指令到 Pi。涉及 GitHub 的示例，请先把 `OWNER/REPO` 和示例编号换成实际仓库与编号；本地自审不访问 GitHub。
