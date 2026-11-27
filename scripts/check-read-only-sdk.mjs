@@ -4,8 +4,10 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { createReadOnlySession, readOnlyToolNames } from '../pi/read-only-session.mjs';
+import { runReadOnlyTask } from '../pi/read-only-task.mjs';
+import { createReadOnlyTaskManager } from '../pi/read-only-manager.mjs';
 
 const packageDir = process.argv[2];
 if (!packageDir) throw new Error('Usage: node scripts/check-read-only-sdk.mjs /path/to/installed/pi-coding-agent');
@@ -51,6 +53,7 @@ function runtime(respond) {
     isUsingOAuth: () => false,
     isUsingSubscription: () => false,
     getRegisteredProviderIds: () => [],
+    settleCredentialWrites: async () => {},
     streamSimple: (_model, context, options) => {
       assert.equal(options.maxRetries, 0);
       const declared = context.tools ?? context.messages.filter(m => m.role === 'system').flatMap(m => m.toolsAdded ?? []);
@@ -98,7 +101,69 @@ try {
   await session.prompt('Exercise a scripted provider failure.');
   assert.equal(failures, 1, 'automatic retries must remain disabled');
   assert.equal(session.messages.at(-1).stopReason, 'error');
-  console.log('Real SDK integration passed: restricted tools, successful reads/search, rejected secret/traversal/link/bash calls, no project resource loading, no retry. Model responses were scripted; no live model called.');
+  session.dispose();
+  session = undefined;
+  let runnerCalls = 0;
+  const completed = await runReadOnlyTask({
+    sdk, Type, root, model, task: 'Read file.txt', acceptance: 'Report the local evidence marker',
+    modelRuntime: runtime(() => ++runnerCalls === 1
+      ? message([tool('workspace_read', { path: 'file.txt' }, 'runner-read')], 'toolUse')
+      : message([{ type: 'text', text: 'SDK_LOCAL_EVIDENCE from file.txt' }])),
+  });
+  assert.equal(completed.status, 'completed', JSON.stringify(completed));
+  assert.equal(completed.verified, false);
+  assert.deepEqual(completed.evidence, [{ tool: 'workspace_read', path: 'file.txt', ok: true }]);
+  let runnerFailures = 0;
+  const failed = await runReadOnlyTask({
+    sdk, Type, root, model, task: 'Exercise failure', acceptance: 'Do not report failure as success',
+    modelRuntime: runtime(() => { runnerFailures++; return { ...message([], 'error'), errorMessage: '503 scripted failure' }; }),
+  });
+  assert.equal(failed.status, 'failed');
+  assert.equal(failed.code, 'MODEL_FAILED');
+  assert.equal(runnerFailures, 1);
+  let deniedCalls = 0;
+  const denied = await runReadOnlyTask({
+    sdk, Type, root, model, task: 'Exercise a denied read', acceptance: 'Stop on denial without retry',
+    modelRuntime: runtime(() => {
+      deniedCalls++;
+      assert.equal(deniedCalls, 1, 'denial must not start another model turn');
+      return message([tool('workspace_read', { path: '.env' }, 'denied-read')], 'toolUse');
+    }),
+  });
+  assert.equal(denied.status, 'failed');
+  assert.equal(denied.code, 'TOOL_FAILED');
+  assert.equal(deniedCalls, 1);
+  // Exercise the production manager -> worker -> real SDK path with a local
+  // SDK shim that overrides ONLY ModelRuntime (no real credentials/network).
+  const shim = join(base, 'scripted-sdk');
+  mkdirSync(join(shim, 'node_modules'), { recursive: true });
+  symlinkSync(dirname(dirname(require.resolve('typebox'))), join(shim, 'node_modules/typebox'));
+  writeFileSync(join(shim, 'package.json'), JSON.stringify({ name: '@earendil-works/pi-coding-agent', type: 'module', exports: { '.': { import: './index.mjs' } } }));
+  writeFileSync(join(shim, 'index.mjs'), `
+export * from ${JSON.stringify(pathToFileURL(resolve(packageDir, entry)).href)};
+import assert from 'node:assert/strict';
+const model = ${JSON.stringify(model)};
+const usage = ${JSON.stringify(usage)};
+const readOnlyToolNames = ${JSON.stringify(readOnlyToolNames)};
+${message.toString()}
+${stream.toString()}
+const tool = ${tool.toString()};
+${runtime.toString()}
+export const ModelRuntime = { create: async () => {
+  let calls = 0;
+  return runtime(() => ++calls === 1
+    ? message([tool('workspace_read', {path:'file.txt'}, 'child-read')], 'toolUse')
+    : message([{type:'text',text:'SDK_LOCAL_EVIDENCE from file.txt'}]));
+}};
+`);
+  const managed = await createReadOnlyTaskManager({ timeoutMs: 30_000 }).run({
+    root, sdkPackage: shim, authPath: join(base, 'unused-auth.json'), provider: model.provider, model: model.id,
+    task: 'Read file.txt', acceptance: 'Return marker evidence',
+  }, { approved: true });
+  assert.equal(managed.status, 'completed', JSON.stringify(managed));
+  assert.equal(managed.verified, false);
+  assert.deepEqual(managed.evidence, [{ tool: 'workspace_read', path: 'file.txt', ok: true }]);
+  console.log('Real SDK integration passed: restricted tools, resource isolation, no retry, task evidence/failure detection, and production manager/worker lifecycle. Model responses were scripted; no live model called.');
 } finally {
   session?.dispose();
   rmSync(base, { recursive: true, force: true });

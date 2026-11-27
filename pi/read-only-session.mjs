@@ -7,7 +7,7 @@ Use only workspace_read, workspace_list and workspace_search within the approved
 Do not edit, execute commands, commit, push, change credentials, access external resources or delegate further. If access is denied or a prerequisite is missing, report the limitation without attempting another route.
 Return findings with relative file paths and line references where available, checks actually performed, and uncertainties. Do not claim skipped or blocked checks passed. The main agent must verify your results.`;
 
-export function createReadOnlyTools({ root, Type, exclude, limits }) {
+export function createReadOnlyTools({ root, Type, exclude, limits, onToolFailure }) {
   const workspace = createReadOnlyWorkspace(root, { exclude, limits });
   const schemas = [
     Type.Object({ path: Type.String({ minLength: 1 }) }, { additionalProperties: false }),
@@ -46,6 +46,7 @@ export function createReadOnlyTools({ root, Type, exclude, limits }) {
         // Do not return OS error messages/stacks containing absolute host paths.
         const code = error instanceof WorkspaceAccessError ? error.code :
           ['ENOENT', 'ENOTDIR', 'EACCES', 'EPERM', 'ELOOP'].includes(error.code) ? error.code : 'IO_FAILURE';
+        onToolFailure?.(code);
         throw new Error(`Workspace operation failed: ${code}`);
       }
     },
@@ -54,12 +55,12 @@ export function createReadOnlyTools({ root, Type, exclude, limits }) {
 
 // Trusted host API. Never pass the returned SDK session, SDK, or model runtime
 // to model-generated code. A process manager/approval UI is intentionally separate.
-export async function createReadOnlySession({ sdk, Type, root, modelRuntime, model, exclude, limits }) {
+export async function createReadOnlySession({ sdk, Type, root, modelRuntime, model, exclude, limits, onToolFailure }) {
   if (!sdk || !Type || !modelRuntime || !model?.id || !model?.provider) {
     throw new Error('Explicit SDK, TypeBox, modelRuntime and model are required');
   }
   const cwd = resolve(root);
-  const customTools = createReadOnlyTools({ root: cwd, Type, exclude, limits });
+  const customTools = createReadOnlyTools({ root: cwd, Type, exclude, limits, onToolFailure });
   const runtime = sdk.createExtensionRuntime();
   const resourceLoader = {
     getExtensions: () => ({ extensions: [], errors: [], runtime }),

@@ -146,7 +146,7 @@ node scripts/check-skill.mjs
 
 项目内只读子进程探针、真实模型测试步骤和验证边界见 [Subagent 测试说明](docs/SUBAGENT_TESTING.md)。普通单元测试不会调用模型。
 
-正在完善的只读子 Agent 已有独立的[文件访问层](docs/READ_ONLY_WORKSPACE.md)及[受限 SDK 会话](docs/READ_ONLY_SESSION.md)：统一限制读取、列表和搜索范围，禁用资源自动发现，并通过真实 SDK 的本地工具分派测试（模型响应由脚本生成，不调用外部模型）。进程管理、超时/取消及最终结果验收尚未完成，也不会自动替换旧探针的原生工具。
+正在完善的只读子 Agent 已有独立的[文件访问层](docs/READ_ONLY_WORKSPACE.md)、[受限 SDK 会话](docs/READ_ONLY_SESSION.md)及[单任务子进程管理器](docs/READ_ONLY_MANAGER.md)：限制文件访问、禁用资源自动发现，支持超时/取消与执行状态检查。已通过真实本地子进程及真实 SDK 链路测试（模型响应由脚本生成，不调用外部模型）。交互式委派确认、主 Agent 语义验收及接入后的真实模型测试尚未完成，也不会自动替换旧探针的原生工具。
 
 ## 快速上手
 
