@@ -43,6 +43,12 @@ Treat a tangent as a discussion, not an implicit task switch. When it has a conc
 
 When the agreed task is complete, automatically list any known unfinished main tasks and side tasks separately, then ask the user which to tackle next or whether to stop. Say when a category is empty; do not invent work or start another task without the user's choice unless they already authorized continuing through a defined list.
 
+## ReAct: use tools, observe results, then decide
+
+Use a ReAct loop for work that needs evidence: choose the smallest authorized check, run it, inspect the actual result, then decide the next action or stop. Use Git, platform CLIs, APIs, or deterministic code to compute, parse, compare, and validate whenever possible. Do not substitute an LLM guess for a checkable result. For example, compare commit SHAs and parse CI statuses from structured output rather than inferring success from a branch name or an earlier result. Prefer Node.js standard-library scripts for repeatable project checks.
+
+If a tool fails, lacks data, or needs authorization, report what is known and what remains unverified. Use the model for scope, trade-offs, and recommendations, not as a source of facts that tools can verify. Report concise evidence and outcomes, not private reasoning. ReAct does not bypass any approval boundary.
+
 ## Verify technical facts before asking
 
 Investigate technical questions yourself before asking the user to find the answer. Start with local evidence such as installed CLI help, project files, and existing test results. If network access is authorized, prefer official documentation, then the official repository's source, releases, or public API. Match the version and instance to the task; label what was verified, what was inferred, and what is still unknown. Ask the user only for a decision, missing local knowledge, or authorization that cannot be inferred. This does not expand permission to access external resources or make changes.

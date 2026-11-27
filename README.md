@@ -37,6 +37,15 @@ ln -s ../../.agents/skills/gh-skill/pi/context-compaction.js .pi/extensions/gh-s
 
 扩展在一轮工作完成后按**当前模型**的上下文窗口检查估算用量，达到约 60% 时请求压缩。同一轮超阈值状态不会反复请求。如果 Pi 已禁用自动压缩，扩展也不会触发。它不改全局设置，也不替换 Pi 原生的溢出恢复或自动压缩；因此不是每个 token 都检查的硬阈值。只想本地启用时，不要提交该链接；关闭时移除该链接并重启 Pi。
 
+## 本仓库的开发检查
+
+维护 `gh-skill` 时用 Node.js 22 或更新版本运行下列检查，无需 Python 或 npm 依赖：
+
+```sh
+node --test scripts/check-skill.test.mjs pi/context-compaction.test.mjs
+node scripts/check-skill.mjs
+```
+
 ## 快速上手
 
 复制下面的指令到 Pi。涉及 GitHub 的示例，请先把 `OWNER/REPO` 和示例编号换成实际仓库与编号；本地自审不访问 GitHub。
