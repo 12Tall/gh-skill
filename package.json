@@ -1,0 +1,8 @@
+{
+  "name": "gh-skill",
+  "private": true,
+  "pi": {
+    "skills": ["./SKILL.md"],
+    "extensions": ["./pi/context-compaction.js"]
+  }
+}

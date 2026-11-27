@@ -1,30 +1,57 @@
 # gh-skill
 
-给 Pi 使用的 GitHub CLI Skill。第一版覆盖仓库、Issue、PR，以及 GitHub Actions 的查询、日志排查、手动触发、失败重跑和取消。
+主要给 **Pi coding agent** 使用的项目级 Skill。它把 Git、平台 CLI 和提交前自审串起来：先用工具核验事实，再根据结果决定下一步（ReAct）。适合整理 Issue、从需求开发到开 PR、排查 CI，以及不联网的本地代码审查。
 
-## 仅在指定项目启用
+| 场景 | 用途与范围 |
+| --- | --- |
+| 本地 Git | 看 diff、查历史、按开发清单审查改动；不需要平台 Token。提交和推送遵守授权规则。 |
+| GitHub | 用 `gh` 处理仓库、Issue、PR 和 Actions，包括查询、日志诊断及明确授权的运行操作。 |
+| Gitea | 预览：用 `tea` 查询，已在 `gitea.com` 验证同仓库普通和草稿 PR；也可用 SSH 推送后在网页操作。 |
+| GitLab.com | 有限只读预览：用 `glab` 查询 Issue、MR 和流水线。同仓库 Draft MR 已单独实测，未启用自动写入。 |
 
-需要 Pi、Git、已登录的 `gh`，以及对私有仓库 `12Tall/gh-skill` 的读取权限。在目标 Git 项目的根目录执行（要求安装目录不存在）：
+## 一键全局安装（默认启用自动压缩）
+
+如果希望所有 Pi 项目都能使用，审阅本仓库的扩展代码后执行：
 
 ```sh
-install_dir=.agents/skills/gh-skill
-exclude_file=$(git rev-parse --git-path info/exclude)
-mkdir -p .agents/skills
-printf '\n/.agents/skills/gh-skill/\n' >> "$exclude_file"
-gh repo clone 12Tall/gh-skill "$install_dir"
+pi install git:github.com/12Tall/gh-skill
 ```
 
-排除规则只写入本地 Git 配置目录，不改项目的 `.gitignore`，也不把 Skill 提交到目标项目。更新时运行 `git -C .agents/skills/gh-skill pull --ff-only`，然后在 Pi 中执行 `/reload` 或重启 Pi。
+重启 Pi 或执行 `/reload`。Pi 会在用户级加载 Skill 和压缩扩展，不需要 npm 发布或额外创建符号链接。扩展在每轮结束时检查当前模型的上下文用量，达到约 60% 时请求压缩；如果你在 Pi 里关闭了自动压缩，扩展不会触发，也不会改写你的设置。只想保留 Skill 时，可在 `pi config` 禁用该包的压缩扩展。
 
-**启用步骤还包括项目指引。** 将下面一行加入目标项目根目录的 `AGENTS.md`（没有就创建，不覆盖已有内容）。Pi 每次启动都会读项目指引；只克隆 Skill 并不能保证模型在提交前自动选用它。若不想共享这次配置，不要暂存该文件的改动。
+全局安装和下文的手动项目安装选一种即可。切换到全局方式前，请移除目标项目里旧的 Skill 副本和可选压缩链接，避免重复加载。卸载用 `pi remove git:github.com/12Tall/gh-skill`，然后重载 Pi。
+
+## 安装到指定 Pi 项目
+
+安装只需要 **Pi 和 Git**。本仓库公开，克隆不需要 GitHub 登录；只有执行具体平台操作时，才需要相应的 CLI 和授权，见[认证指南](references/authentication.md)。
+
+在**要使用 Skill 的 Git 项目根目录**执行，安装目录须不存在：
+
+```sh
+git clone https://github.com/12Tall/gh-skill.git .agents/skills/gh-skill
+```
+
+如果只想本地使用，不把 Skill 加入目标仓库，执行下面这段。它只修改当前 Git 仓库的本地排除文件，不改 `.gitignore`：
+
+```sh
+exclude_file=$(git rev-parse --git-path info/exclude) &&
+  { grep -qxF '/.agents/skills/gh-skill/' "$exclude_file" 2>/dev/null ||
+    printf '\n/.agents/skills/gh-skill/\n' >> "$exclude_file"; }
+```
+
+从目标项目启动 `pi`，无需传 `--skill`。首次验证试用：`/skill:gh-skill 只读审查本地改动，不访问 GitHub`。如果 Pi 已经在运行，执行 `/reload` 或重启。
+
+**更新或固定版本：**默认安装跟随 `master`，更新用 `git -C .agents/skills/gh-skill pull --ff-only`。想固定在已发布版本，可在克隆时加 `--branch v0.4.1`；固定安装要切换到新的发布标签，而不是运行 `pull`。更新后重载 Pi。卸载时先移除可选的扩展链接和你加到 `AGENTS.md` 的那一行，再移除 Skill 安装目录并重载 Pi。
+
+### 启用默认提交前自审
+
+如果希望 Pi 在你只说「请提交」时也自动使用开发清单，将下面一行加入目标项目根目录的 `AGENTS.md`（没有就创建，不覆盖已有内容）。Pi 每次启动都会读项目指引；只克隆 Skill 并不能保证模型在提交前自动选用它。若不想共享这次配置，不要暂存该文件的改动。
 
 ```text
 本项目启用 gh-skill：每次由 Pi 创建 Git 提交前（包括 amend），必须先读取 .agents/skills/gh-skill/references/development.md，审查将要提交的 diff 并运行相关检查；有实质问题或验证受阻时先停下汇报，不要提交。自审不等于提交授权。
 ```
 
 这是对 Pi 的项目级约束，不是 Git hook，不拦截你在终端手动执行的 `git commit`。
-
-从目标项目启动 `pi`（不需要 `--skill`）。先用 `/skill:gh-skill 只读审查本地改动，不访问 GitHub` 验证加载。
 
 ## 可选：约 60% 时自动压缩
 
