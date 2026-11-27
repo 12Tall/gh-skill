@@ -40,3 +40,31 @@ test('opt-in threshold tracks the active model and does not loop', () => {
   settle(120_000);
   assert.equal(attempts.length, 3);
 });
+
+test('a synchronous compaction failure warns and allows a later threshold crossing', () => {
+  const handlers = new Map();
+  const notices = [];
+  let tokens = 60_000;
+  let attempts = 0;
+  install({ on: (name, handler) => handlers.set(name, handler), getSettings: () => ({}) });
+  const ctx = {
+    model: { provider: 'mock', id: 'small', contextWindow: 100_000 },
+    isIdle: () => true,
+    getContextUsage: () => ({ tokens }),
+    hasUI: true,
+    ui: { notify: (message, level) => notices.push({ message, level }) },
+    compact: () => {
+      if (++attempts === 1) throw new Error('mock synchronous failure');
+    },
+  };
+  const settle = () => handlers.get('agent_settled')({}, ctx);
+  assert.doesNotThrow(settle);
+  assert.deepEqual(notices, [{ message: 'gh-skill compaction failed: mock synchronous failure', level: 'warning' }]);
+  settle();
+  assert.equal(attempts, 1);
+  tokens = 59_999;
+  settle();
+  tokens = 60_000;
+  settle();
+  assert.equal(attempts, 2);
+});
