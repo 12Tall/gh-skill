@@ -39,6 +39,10 @@ Treat a tangent as a discussion, not an implicit task switch. When it has a conc
 
 When the agreed task is complete, automatically list any known unfinished main tasks and side tasks separately, then ask the user which to tackle next or whether to stop. Say when a category is empty; do not invent work or start another task without the user's choice unless they already authorized continuing through a defined list.
 
+## Verify technical facts before asking
+
+Investigate technical questions yourself before asking the user to find the answer. Start with local evidence such as installed CLI help, project files, and existing test results. If network access is authorized, prefer official documentation, then the official repository's source, releases, or public API. Match the version and instance to the task; label what was verified, what was inferred, and what is still unknown. Ask the user only for a decision, missing local knowledge, or authorization that cannot be inferred. This does not expand permission to access external resources or make changes.
+
 ## Development and pre-commit review
 
 Read the bundled [development checklist](references/development.md) before implementing an Issue, preparing a commit, or performing a requested pre-commit review. It covers acceptance criteria, design and coupling, shared rules, testing, and diff review. Before every Git commit you create, including amend, review the intended staged diff and run relevant checks. Stop and report material findings or blocked verification rather than committing. A review-only request is read-only and does not require a GitHub lookup or login; review does not grant commit authority.
