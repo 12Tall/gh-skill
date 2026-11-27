@@ -33,17 +33,39 @@ pi install git:github.com/12Tall/gh-skill
 
 无需在每个项目克隆 Skill，也无需传 `--skill`。更多任务示例见下方「快速上手」。
 
-### 更新与卸载
+### 更新 Skill（全局安装）
+
+仓库发布新改动后，在**终端的任意目录**执行，无需重新克隆或卸载：
 
 ```sh
-# 只更新本包；更新后在 Pi 内执行 /reload 或重启
-pi update git:github.com/12Tall/gh-skill
+# 查看已配置的包，确认 gh-skill 的安装来源
+pi list
 
-# 卸载本包；卸载后同样需要重载
+# 只更新 gh-skill（需要联网）
+pi update git:github.com/12Tall/gh-skill
+```
+
+命令成功后，在正在运行的 **Pi 会话内**输入：
+
+```text
+/reload
+```
+
+也可以退出并重新启动 Pi。所有使用该全局包的项目都会在下次加载时使用更新后的 Skill、参考资料和扩展；其他已打开的会话也需要分别重载。可输入 `/skill:gh-skill 只读审查本地改动，不访问 GitHub` 验证仍可调用。
+
+- 按上方不带版本的命令安装时，更新跟随仓库默认分支；本仓库为 `master`。
+- 若安装来源固定了标签或提交，更新不会自动切换到新版本。要升级，先选定实际存在的新标签或提交，再用 `pi install git:github.com/12Tall/gh-skill@<新标签或提交>` 更换固定版本（替换占位符），然后重载。
+- 若更新报错，不要视为更新成功；排查网络或 Git 错误后重试。`/reload` 不能替代一次成功的包更新。
+- 不要用不带参数的 `pi update` 更新 Skill：它更新的是 **Pi 本身**。`pi update --extensions` 会更新所有已安装的 Pi 包，不只本 Skill。
+- 手动克隆到项目的安装方式不使用上述包更新命令，见下方「备选：手动安装到指定 Pi 项目」的 `git pull --ff-only` 说明。
+
+### 卸载
+
+```sh
 pi remove git:github.com/12Tall/gh-skill
 ```
 
-不要用不带参数的 `pi update` 更新 Skill：它更新的是 Pi 本身。卸载后，如果添加过下方的自审指引，也应移除对应指引。
+卸载后重载或重启 Pi；如果添加过下方的自审指引，也应移除对应指引。
 
 全局安装和下文的手动项目安装选一种即可。切换到全局方式前，检查并移除目标项目里旧的 `.agents/skills/gh-skill` 副本和 `.pi/extensions/gh-skill-context-compaction.js` 链接，避免重复加载；有本地修改时先保留。旧 `AGENTS.md` 中硬编码项目安装路径的指引，也应换成下方不依赖安装路径的版本。
 

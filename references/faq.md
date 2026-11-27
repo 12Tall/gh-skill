@@ -3,6 +3,7 @@
 这里整理可复用的结论，不保存聊天原文或其他项目的细节。
 
 - **怎么启用？** 推荐按 [README](../README.md) 用 `pi install git:github.com/12Tall/gh-skill` 全局安装，重载后在任意项目用 `/skill:gh-skill` 调用；默认包含自动压缩扩展，可在 `pi config` 禁用。要让 Pi 默认在提交前自审，将 README 的指引追加到 `~/.pi/agent/AGENTS.md`（所有项目）或项目的 `AGENTS.md`（仅该项目）。这不是 Git hook，不拦截手动提交。
+- **怎么更新 Skill？** 全局安装在终端执行 `pi update git:github.com/12Tall/gh-skill`，成功后在 Pi 会话内执行 `/reload` 或重启；无需重新克隆。固定标签或提交不会自动升级到新版本。手动项目克隆则执行 `git -C .agents/skills/gh-skill pull --ff-only`。完整步骤见 [README](../README.md)。注意不带参数的 `pi update` 更新的是 Pi 本身。
 - **新仓库用什么分支？** 默认 `master`，用户可以覆盖；已有仓库按实际默认分支操作，不擅自改名。
 - **从 Issue 做到哪一步？** 仅要求实现时，完成本地修改和验证就停。明确要求 Draft PR 也不等于同意提交：先汇报改动与验证结果，获得确认后才创建或修改提交；未解决的本地失败不默认推送。合并和生产部署单独确认。
 - **怎么判断设计是否过度耦合？** 先写验收条件，分开职责。必须一起变化的规则由负责它的模块统一维护；碰巧相等但能独立变化的值保持独立。重复的是判断逻辑时，优先共享函数。
