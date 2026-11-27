@@ -34,4 +34,4 @@
 
 - [`tea` 主分支的 PR 创建实现](https://gitea.com/gitea/tea/src/branch/main/cmd/pulls/create.go)支持 `--head <user>:<branch>`，并用 `--draft` 加上 `WIP:` 前缀。按 [Gitea 官方说明](https://docs.gitea.com/usage/pull-request)，服务端用可配置的前缀识别 WIP 并阻止合并；用户接受这种由服务端阻止合并的 WIP 作为草稿；若推送前不能确认实例会识别 `WIP:`，仍须询问，不把标题前缀本身当成草稿。
 - [Gitea 1.25 API](https://docs.gitea.com/api/1.25/)支持按提交查询状态、按 `head_sha` 筛选 Actions 运行。仍需验证计划支持的 `tea` 发布版本、官方云实例实际能力，以及 Fork PR 的运行归属和提交匹配。
-- 候选实例 `https://gitea.com` 的公开 `/api/v1/version` 和 `/api/v1/settings/repository` 均返回 HTTP 200。版本接口报告 `29.0.0+dev-160-g55186ca39b`；仓库设置响应不暴露 WIP 前缀。未确认该地址是否是用户的 Cloud 工作区，也未确认草稿保护；不能据此授权推送或把 `WIP:` 当作已验证草稿。
+- 候选实例 `https://gitea.com` 的公开 `/api/v1/version` 和 `/api/v1/settings/repository` 均返回 HTTP 200。版本接口报告 `29.0.0+dev-160-g55186ca39b`；仓库设置响应不暴露 WIP 前缀。未确认该地址是否是用户的 Cloud 工作区。后续只读查询同实例官方 `gitea/runner` 仓库的公开 PR [#1246](https://gitea.com/gitea/runner/pulls/1246) 和 [#1210](https://gitea.com/gitea/runner/pulls/1210)：两者均以 `WIP:` 开头，API 返回 `draft: true` 与 `mergeable: false`。结合官方文档，这是 `gitea.com` 识别 `WIP:` 的实例证据；专用测试仓库的同仓库草稿 PR #2 已用 `tea --draft` 创建，API 回读为 `draft: true`、`mergeable: false`；未尝试合并。
