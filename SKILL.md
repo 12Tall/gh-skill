@@ -62,9 +62,11 @@ To open a draft, use `gh pr create -R "$repo" --base "$base" --head "$branch" --
 
 If CI fails after opening a requested draft PR, inspect the logs. If the failure is clearly caused by the current change, make at most one local follow-up fix and validate it. Ask for explicit approval before committing the fix; if approved and pushing is authorized, push to the same branch and report the updated CI status. If the failure is unrelated or unclear, local validation fails, or the fix would require changing Actions configuration, permissions, or secrets, stop and report instead. A request to investigate CI alone is read-only unless the user explicitly requests a change.
 
-## CI runner availability
+## Missing prerequisites: one decision path
 
-When the target has no built-in or otherwise authorized runner available, leave runner-dependent capabilities unconfigured and explain why they are unavailable. If runner availability is unknown, report it as unconfirmed rather than inferring it from an empty list. Existing CI records may still be read when authorized. Do not install, register, or substitute a runner automatically. If the user wants runner support, explain that this Skill's platform guidance must be updated and validated on the intended instance before claiming support; ask for approval before changing files or configuring infrastructure outside the active project.
+If a capability depends on a missing or unverified prerequisite (such as a token scope, existing Fork, runner, or draft support), report the capability, the missing or unconfirmed prerequisite, and one concrete condition for reopening it. Leave that capability unconfigured or close its current verification; continue only independent, authorized work. Do not silently substitute a broader token, create a Fork, or install or register a runner. Keep explicit platform fallbacks user-selected. When the prerequisite is supplied, verify it on the exact target before claiming support.
+
+For CI, an empty runner list alone does not prove that hosted or inherited runners are unavailable. Authorized reads of existing CI records can continue even when execution is unconfigured. If the user wants to add runner support, explain which platform guidance must be updated and verify a real run on the intended instance after separately authorized configuration.
 
 ## GitHub Actions
 

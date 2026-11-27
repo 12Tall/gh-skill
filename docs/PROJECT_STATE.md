@@ -2,18 +2,21 @@
 
 ## 当前主线
 
-保留 GitHub 现有功能、Gitea 预览和 GitLab.com 有限只读预览。GitLab 写入、自建实例和其他平台暂缓。
+保留 GitHub 现有功能、Gitea 预览和 GitLab.com 有限只读预览。自建实例与其他平台暂缓。
 
 先前讨论的范围与证据见[多平台调研记录](MULTI_PLATFORM.md)。
 
-- **待收尾：**经用户确认后，提交 runner 规则和 GitLab 只读验收指南。
-- **GitLab.com：**现有 PAT 登录、私有项目元数据读取、官方公开项目的 Issue、MR 和合并结果流水线查询已验收。仅含 `read_api` 的 PAT、MR 写入和 runner 尚未验收。
+- **GitLab MR 实测：**专用私有测试项目以 `main` 为基线，已通过 SSH 推送同仓库测试分支并由 `glab --draft` 创建 MR !1；API 核对了草稿、源/目标分支和 head SHA。测试 MR 已关闭、未合并，源分支保留；未配置 CI 或 runner。
+- **GitLab.com：**现有 PAT 登录、私有项目元数据读取、官方公开项目的 Issue、MR 和合并结果流水线查询已验收。仅含 `read_api` 的 PAT、Fork 和 runner 尚未验收；仅同仓库草稿 MR 写入做过实测。
 - **已验收：**`gitea.com` 私有仓库元数据及 Issue、PR、Actions 只读接口；SSH 推送同仓库分支并用 `tea v0.16.0` 创建普通 PR。API 回读确认源分支、目标 `master` 和 head SHA。测试 PR 已关闭、未合并，测试分支保留。
 - **草稿实测：**复用已有提交，SSH 推送独立分支后，`tea --draft` 创建同仓库 PR #2；API 确认是草稿且不可合并。测试 PR 已关闭、未合并，测试分支保留。
 - **未验收：**真实 CI 运行及归属、Fork、官方 Gitea Cloud 和自建 Gitea。未安装或注册 runner，未上传测试 workflow。
 
 ## 暂缓的支线
 
+- Gitea Fork：没有已确认的现成 Fork，关闭本轮验收，不自动创建。
+- GitLab 最小权限 PAT：没有单独的 `read_api` 令牌，关闭本轮验收，不用广权限令牌冒充最小权限结果。
+- Gitea/GitLab 真实 CI 执行：不安装或注册 runner。没有可用 runner 时保持未配置；可用性未知时标明未确认。已授权的历史流水线查询不受影响。
 - 压缩扩展维持现有防重复策略。仅在实际使用中出现漏触发时，再评估根据压缩后用量解除限制。
 
 ## 已完成
