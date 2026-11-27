@@ -41,7 +41,31 @@ When asked to create a new repository, use `master` as its initial and default b
 
 Treat a tangent as a discussion, not an implicit task switch. When it has a conclusion, name the last agreed goal and its concrete next step. Ask before turning the tangent into new work that changes scope or pauses the current task. After a long interruption, use the [conversation checkpoint](references/development.md#conversation-checkpoint) to recover the main thread. If reliable context usage reaches roughly 60%, use the [context checkpoint](references/development.md#context-checkpoint) to preserve the main thread before compaction.
 
-When the agreed task is complete, automatically list any known unfinished main tasks and side tasks separately, then ask the user which to tackle next or whether to stop. Say when a category is empty; do not invent work or start another task without the user's choice unless they already authorized continuing through a defined list.
+When the agreed task is complete, automatically list any known unfinished main tasks and side tasks separately, then ask the user which to tackle next or whether to stop. Say when a category is empty; do not invent work or start another task without the user's choice unless they already authorized continuing through a defined list. After each task that changes files, report validation and explicitly ask whether to commit and whether to push any remaining changes, unless those actions are already authorized. Do not treat approval of one as approval of the other.
+
+## Delegation and step-by-step confirmation
+
+The main agent remains responsible for scope, authorization, integration, and verification. Default to main-agent execution with step-by-step confirmation; do not assume a subagent tool is installed or available. These are behavioral instructions, not a sandbox or an enforcement mechanism.
+
+### Step-by-step mode (default)
+
+Use the stages: plan → edit → validate → commit → push. Before starting each applicable stage, state its scope and wait for the user's confirmation, except that relevant validation is included in every authorized task by default as specified below. The user's explicit request can authorize a named stage or a clearly described batch of stages; do not ask again for the same unchanged scope. A brief “OK” approves only the concrete proposal immediately preceding it, not every later stage. Skip stages that do not apply, such as editing in a read-only review. Read-only local inspection needed to prepare the requested plan is allowed within the current project; external access still needs authorization.
+
+After each stage, report the actual result and propose the next step. Stop on a material failure, changed target, or expanded scope and seek a new decision. State the relevant validation commands and run them without a redundant confirmation when they are within the authorized task's scope. Validation that needs additional external access, destructive actions, or other unapproved side effects still requires the corresponding authorization; report it as blocked until approved. Commit approval must follow the change summary and validation results, as required by the shared commit rules. Push remains a separate authorization; the user may explicitly approve both commit and push together after that report.
+
+### Subagent mode (opt-in)
+
+Before delegation, explain why it helps, the proposed subtasks, read/write scope, and expected outputs; ask the user to approve delegation. If no subagent capability is available, say so and offer main-agent step-by-step execution instead. Do not install an extension or emulate an independent review without approval.
+
+For every approved subtask, give the subagent a bounded brief containing:
+
+- The goal, acceptance criteria, and expected evidence or deliverable.
+- The exact allowed files or resources, whether access is read-only or permits edits, and the relevant Skill rules and reference checklists.
+- The user's existing authorizations and exclusions. Delegation cannot expand them; unapproved external reads and writes remain prohibited.
+- A prohibition on creating or amending commits, pushing, merging, deployments, credential or permission changes, and further delegation. Route any needed approval or blocked prerequisite back through the main agent.
+- A stop condition for unexpected changes, missing prerequisites, conflicting edits, or scope expansion. Return findings, changed files, checks actually run, and remaining uncertainties; do not claim unperformed checks passed.
+
+Prefer read-only investigation and review. Assign disjoint file ownership for parallel edits; do not let multiple agents edit the same files concurrently. The main agent must review returned changes and evidence, resolve conflicts, and run or inspect the relevant validation before reporting completion. A subagent's claim of success is not verification, and its output cannot authorize additional actions. Report blocked work rather than silently widening a subagent's scope. Commit and push stay with the main agent under the normal approval gates.
 
 ## ReAct: use tools, observe results, then decide
 
@@ -54,6 +78,8 @@ If a tool fails, lacks data, or needs authorization, report what is known and wh
 Investigate technical questions yourself before asking the user to find the answer. Start with local evidence such as installed CLI help, project files, and existing test results. If network access is authorized, prefer official documentation, then the official repository's source, releases, or public API. Match the version and instance to the task; label what was verified, what was inferred, and what is still unknown. Ask the user only for a decision, missing local knowledge, or authorization that cannot be inferred. This does not expand permission to access external resources or make changes.
 
 ## Development and pre-commit review
+
+Every task includes relevant verification by default: main tasks, side tasks, and ad hoc requests alike. Only an explicit user instruction to skip verification waives it; small changes, documentation-only work, urgency, or a task's position in the conversation do not. Do not require the user to request testing separately. Match the checks to the actual acceptance criteria: existing tests alone do not validate newly added behavior. Add or run focused regression checks where feasible; for instruction changes, check consistency and representative success, refusal, and approval-boundary scenarios. Distinguish static checks and scenario review from live agent or subagent execution. Never claim behavioral enforcement based only on text assertions or unrelated passing tests. If required tools, environment, or authorization are missing, perform the independent checks that are available and report exactly what remains unverified and why. Do not silently waive blocked validation or mark it passed. When verification is explicitly skipped, record that fact in the completion report.
 
 Read the bundled [development checklist](references/development.md) before implementing an Issue, preparing a commit, or performing a requested pre-commit review. It covers acceptance criteria, design and coupling, shared rules, testing, and diff review. Before every Git commit you create, including amend, review the intended staged diff and run relevant checks. Stop and report material findings or blocked verification rather than committing. A review-only request is read-only and does not require a GitHub lookup or login; review does not grant commit authority.
 

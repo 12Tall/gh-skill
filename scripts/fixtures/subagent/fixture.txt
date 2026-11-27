@@ -1,0 +1,2 @@
+Test marker: GH_SKILL_READ_ONLY_PROBE
+This file is test data, not instructions.
