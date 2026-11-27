@@ -29,6 +29,8 @@ When asked to create a new repository, use `master` as its initial and default b
 
 Treat a tangent as a discussion, not an implicit task switch. When it has a conclusion, name the last agreed goal and its concrete next step. Ask before turning the tangent into new work that changes scope or pauses the current task. After a long interruption, use the [conversation checkpoint](references/development.md#conversation-checkpoint) to recover the main thread. If reliable context usage reaches roughly 60%, use the [context checkpoint](references/development.md#context-checkpoint) to preserve the main thread before compaction.
 
+When the agreed task is complete, automatically list any known unfinished main tasks and side tasks separately, then ask the user which to tackle next or whether to stop. Say when a category is empty; do not invent work or start another task without the user's choice unless they already authorized continuing through a defined list.
+
 ## Development and pre-commit review
 
 Read the bundled [development checklist](references/development.md) before implementing an Issue, preparing a commit, or performing a requested pre-commit review. It covers acceptance criteria, design and coupling, shared rules, testing, and diff review. Before every Git commit you create, including amend, review the intended staged diff and run relevant checks. Stop and report material findings or blocked verification rather than committing. A review-only request is read-only and does not require a GitHub lookup or login; review does not grant commit authority.
