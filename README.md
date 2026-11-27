@@ -9,6 +9,18 @@
 | Gitea | 预览：用 `tea` 查询，已在 `gitea.com` 验证同仓库普通和草稿 PR；也可用 SSH 推送后在网页操作。 |
 | GitLab.com | 有限只读预览：用 `glab` 查询 Issue、MR 和流水线。同仓库 Draft MR 已单独实测，未启用自动写入。 |
 
+## 一键全局安装（默认启用自动压缩）
+
+如果希望所有 Pi 项目都能使用，审阅本仓库的扩展代码后执行：
+
+```sh
+pi install git:github.com/12Tall/gh-skill
+```
+
+重启 Pi 或执行 `/reload`。Pi 会在用户级加载 Skill 和压缩扩展，不需要 npm 发布或额外创建符号链接。扩展在每轮结束时检查当前模型的上下文用量，达到约 60% 时请求压缩；如果你在 Pi 里关闭了自动压缩，扩展不会触发，也不会改写你的设置。只想保留 Skill 时，可在 `pi config` 禁用该包的压缩扩展。
+
+全局安装和下文的手动项目安装选一种即可。切换到全局方式前，请移除目标项目里旧的 Skill 副本和可选压缩链接，避免重复加载。卸载用 `pi remove git:github.com/12Tall/gh-skill`，然后重载 Pi。
+
 ## 安装到指定 Pi 项目
 
 安装只需要 **Pi 和 Git**。本仓库公开，克隆不需要 GitHub 登录；只有执行具体平台操作时，才需要相应的 CLI 和授权，见[认证指南](references/authentication.md)。
