@@ -8,6 +8,7 @@ import { dirname, join, resolve } from 'node:path';
 import { createReadOnlySession, readOnlyToolNames } from '../pi/read-only-session.mjs';
 import { runReadOnlyTask } from '../pi/read-only-task.mjs';
 import { createReadOnlyTaskManager } from '../pi/read-only-manager.mjs';
+import { confirmAndRun, recordReview, reviewChecklist } from '../pi/read-only-workflow.mjs';
 
 const packageDir = process.argv[2];
 if (!packageDir) throw new Error('Usage: node scripts/check-read-only-sdk.mjs /path/to/installed/pi-coding-agent');
@@ -163,7 +164,25 @@ export const ModelRuntime = { create: async () => {
   assert.equal(managed.status, 'completed', JSON.stringify(managed));
   assert.equal(managed.verified, false);
   assert.deepEqual(managed.evidence, [{ tool: 'workspace_read', path: 'file.txt', ok: true }]);
-  console.log('Real SDK integration passed: restricted tools, resource isolation, no retry, task evidence/failure detection, and production manager/worker lifecycle. Model responses were scripted; no live model called.');
+  const packet = await confirmAndRun({
+    root, sdkPackage: shim, authPath: join(base, 'unused-auth.json'), provider: model.provider, model: model.id,
+    task: 'Read file.txt', acceptance: 'Return marker evidence',
+  }, {
+    timeoutMs: 30_000,
+    confirm: async text => { assert.ok(text.includes(root)); assert.ok(text.includes(model.id)); return true; },
+  });
+  assert.equal(packet.execution.status, 'completed', JSON.stringify(packet));
+  assert.equal(packet.review.status, 'pending');
+  // Independent fixture check, not an acceptance based only on the scripted summary.
+  assert.equal(readFileSync(join(root, 'file.txt'), 'utf8'), 'SDK_LOCAL_EVIDENCE\n');
+  assert.deepEqual(packet.execution.evidence, [{ tool: 'workspace_read', path: 'file.txt', ok: true }]);
+  const reviewed = recordReview(packet, {
+    digest: packet.digest,
+    checks: reviewChecklist.map(({ id }) => ({ id, outcome: 'passed', basis: 'Local integration test: independently read file.txt marker and checked exact read-only tool evidence; model response is scripted, not a live-model result.' })),
+  });
+  assert.equal(reviewed.review.status, 'accepted');
+  assert.equal(reviewed.execution.verified, false);
+  console.log('Real SDK integration passed: restricted tools, resource isolation, no retry, task checks, manager/worker lifecycle, confirmation and review handoff. Model responses were scripted; no live model called.');
 } finally {
   session?.dispose();
   rmSync(base, { recursive: true, force: true });

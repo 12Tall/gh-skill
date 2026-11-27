@@ -1,8 +1,11 @@
 name: Skill checks
 
 on:
+  push:
+    branches: [master]
   pull_request:
     branches: [master]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -10,10 +13,34 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
         with:
           persist-credentials: false
-      - run: node --test scripts/check-skill.test.mjs pi/context-compaction.test.mjs
-      - run: node scripts/check-skill.mjs
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Unit and regression tests (no model calls)
+        run: node --test scripts/*.test.mjs pi/context-compaction.test.mjs
+      - name: Skill and documentation checks
+        run: node scripts/check-skill.mjs
+
+  sdk-and-terminal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install fixed-version SDK for scripted integration tests
+        run: npm install --prefix "$RUNNER_TEMP/gh-skill-sdk" --no-save --ignore-scripts --no-audit --no-fund @earendil-works/pi-coding-agent@1.6.1
+      - name: Real SDK with scripted model backend (no credentials)
+        run: node scripts/check-read-only-sdk.mjs "$RUNNER_TEMP/gh-skill-sdk/node_modules/@earendil-works/pi-coding-agent"
+      - name: Pseudo-terminal confirmation checks (no model calls)
+        run: |
+          command -v script
+          node scripts/check-read-only-terminal.mjs

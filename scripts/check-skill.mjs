@@ -43,7 +43,7 @@ export function checkSkill(root) {
   }
 
   const missing = [];
-  const docs = [skill, resolve(root, 'README.md'), ...markdownFiles(resolve(root, 'references'))];
+  const docs = [skill, resolve(root, 'README.md'), ...markdownFiles(resolve(root, 'references')), ...markdownFiles(resolve(root, 'docs'))];
   for (const doc of docs) {
     for (const line of proseLines(readFileSync(doc, 'utf8'))) {
       for (const [, target] of line.matchAll(/\]\(([^\s)]+)\)/g)) {

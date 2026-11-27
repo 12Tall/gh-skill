@@ -135,9 +135,17 @@ ln -s ../../.agents/skills/gh-skill/pi/context-compaction.js .pi/extensions/gh-s
 
 示例：`/skill:gh-skill 先提出修改方案，每一步找我确认，不使用 subagent`。也可以要求「先提出 subagent 分工和授权范围，等我确认再委派」。每项修改任务结束后，Agent 应汇报检查结果，并明确提醒是否提交、是否 push；两者可以一起授权，但不能由其中一个推定另一个。
 
+## 默认推进规则
+
+- 每个问题和子问题都用 ReAct / PDCA：明确目标、检查证据、修正复验，直到得到限定范围内的可靠结论，或明确未解决/受阻及所缺条件；不无限重试。
+- 能在 Actions 完成的测试、构建和静态检查优先放到 Actions。本地只做必要预检查、无法迁移的交互/本机环境验证或最小排障，不上传本机模型凭据。见 [Actions 优先策略](references/actions.md#actions-first-execution)。
+- 对当前授权任务中创建或明确交由主 Agent 负责的非 Draft PR，最新检查和必需审批均通过、无冲突/未解决问题且合并方式明确时默认合并；只读/不合并要求优先，生产部署仍需授权。见[完整合并门槛](references/merging.md)。
+
 ## 本仓库的开发检查
 
-维护 `gh-skill` 时用 Node.js 22 或更新版本运行下列检查，无需 Python 或 npm 依赖：
+正式验证优先由 `.github/workflows/skill-check.yml` 在 push 到 `master` 或 PR 时执行：Node.js 22 单元/回归检查、固定 Pi 1.6.1 的脚本化 SDK 集成和伪终端检查。workflow 只保留 Contents 读取权限，不调用真实模型。配置存在不代表远端已经通过，须核对实际提交及运行结果。
+
+下列是 runner 使用的基础命令，也供必要的最小本地复现使用，无需 Python 或 npm 依赖：
 
 ```sh
 node --test scripts/*.test.mjs pi/context-compaction.test.mjs
@@ -146,7 +154,7 @@ node scripts/check-skill.mjs
 
 项目内只读子进程探针、真实模型测试步骤和验证边界见 [Subagent 测试说明](docs/SUBAGENT_TESTING.md)。普通单元测试不会调用模型。
 
-正在完善的只读子 Agent 已有独立的[文件访问层](docs/READ_ONLY_WORKSPACE.md)、[受限 SDK 会话](docs/READ_ONLY_SESSION.md)及[单任务子进程管理器](docs/READ_ONLY_MANAGER.md)：限制文件访问、禁用资源自动发现，支持超时/取消与执行状态检查。已通过真实本地子进程及真实 SDK 链路测试（模型响应由脚本生成，不调用外部模型）。交互式委派确认、主 Agent 语义验收及接入后的真实模型测试尚未完成，也不会自动替换旧探针的原生工具。
+正在完善的只读子 Agent 已有[文件访问层](docs/READ_ONLY_WORKSPACE.md)、[受限 SDK 会话](docs/READ_ONLY_SESSION.md)、[单任务子进程管理器](docs/READ_ONLY_MANAGER.md)及[终端确认与独立复核入口](docs/READ_ONLY_WORKFLOW.md)：限制文件访问、支持超时/取消，真人确认后运行，并将执行完成与主 Agent 验收分开。已通过本地子进程、真实 SDK（脚本化模型响应）及伪终端测试，不调用外部模型。已完成授权的 3 个真实模型场景及主 Agent 独立核验，见[实测记录](docs/READ_ONLY_WORKFLOW.md#真实模型验证记录)。当前不全局安装、不注册 Pi 原生命令，也不会自动替换旧探针。
 
 ## 快速上手
 
@@ -155,7 +163,7 @@ node scripts/check-skill.mjs
 | 任务 | 指令 |
 | --- | --- |
 | 整理待办 | `/skill:gh-skill 按标签和负责人汇总 GitHub 仓库 OWNER/REPO 未关闭的 Issue，只读` |
-| 从 Issue 开 Draft PR | `/skill:gh-skill 实现 GitHub 仓库 OWNER/REPO 的 Issue #12，本地检查通过后在该仓库开 Draft PR，并只读查看 CI，不合并` |
+| 从 Issue 开 Draft PR | `/skill:gh-skill 实现 GitHub 仓库 OWNER/REPO 的 Issue #12，必要预检查后在该仓库开 Draft PR，并在 Actions 验证及只读查看 CI，不合并` |
 | 提交前自审 | `/skill:gh-skill 按开发清单审查本地改动，指出耦合、重复规则和漏测；只读，不提交` |
 | 诊断 PR 的 CI | `/skill:gh-skill 只读检查 GitHub 仓库 OWNER/REPO 的 PR #42 最新提交的 CI；如果失败，汇报失败步骤和关键日志，不重跑` |
 
@@ -163,4 +171,4 @@ node scripts/check-skill.mjs
 
 有关开发习惯、对话主线和项目外资源授权的约定，见[常见问题](references/faq.md)。
 
-整理、诊断和仅审查默认只读。只说「实现 Issue」时，Pi 在本地修改和验证后停下，不自动提交或推送。即使明确要求开 Draft PR，也要先汇报改动和验证结果，得到同意后才能创建或修改提交。未经明确同意，不修改其他仓库或当前项目外的目录。加标签、指派、评论和手动重跑也需要明确授权；合并与生产部署要单独确认。
+整理、诊断和仅审查默认只读。只说「实现 Issue」时，Pi 在本地修改和验证后停下，不自动提交或推送。即使明确要求开 Draft PR，也要先汇报改动和验证结果，得到同意后才能创建或修改提交。未经明确同意，不修改其他仓库或当前项目外的目录。加标签、指派、评论和手动重跑也需要明确授权；符合默认合并门槛的任务内 PR 不再重复询问是否合并，生产部署和其他高风险例外仍须单独确认。

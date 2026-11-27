@@ -2,6 +2,16 @@
 
 Set `repo` to the verified `OWNER/REPO`. Use a workflow filename or workflow ID for `$workflow`, and a numeric run ID from `gh run list` for `$run`.
 
+## Actions-first execution
+
+Prefer GitHub Actions for reproducible unit/regression tests, builds, lint/static checks, and environment-independent integration tests. Inspect the existing workflow first and extend it rather than duplicating a full test suite locally. Keep runner permissions minimal, pin tool/runtime versions where practical, avoid model credentials and other workstation secrets, and make the relevant checks run on the intended push/PR events.
+
+Local execution is for necessary small syntax/diff/configuration preflight checks, interactive/TUI checks or machine-specific prerequisites that cannot be reproduced in CI, and minimal diagnosis when CI is unavailable or blocked. Even terminal or SDK integration checks should move to an isolated runner when they can be reproduced there. Explain the reason for any local fallback; do not install/register runners, widen tokens or upload credentials as an automatic workaround.
+
+The preference does not itself authorize network access, a dispatch/rerun, a commit/push, or a production deployment. When a changed workflow can only be validated after publishing a commit, report its CI checks as pending, obtain commit/push approval, and inspect the resulting run for that exact revision. Never claim remote success from a local run or from the presence of workflow YAML. Do not duplicate an already sufficient CI run locally merely for ritual compliance.
+
+For this repository, `skill-check.yml` should run the full dependency-free test suite and document checks, plus fixed-version Pi SDK integration and pseudo-terminal checks without real model credentials. Live-model verification remains separately authorized; local OAuth storage must not be copied into Actions.
+
 ## Diagnose the latest checks on a PR
 
 ```sh
