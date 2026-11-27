@@ -1,0 +1,22 @@
+# Inactive fixture: intended for .gitea/workflows/ in the authorized test repository only.
+name: PR revision probe
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions: {}
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Distinguish initial and updated PR runs
+        env:
+          PR_EVENT_ACTION: ${{ github.event.action }}
+        run: |
+          case "$PR_EVENT_ACTION" in
+            opened) echo 'Intentional failure for the initial revision'; exit 1 ;;
+            synchronize) echo 'Updated revision passes' ;;
+            *) echo 'Unexpected PR event action'; exit 2 ;;
+          esac
