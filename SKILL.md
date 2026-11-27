@@ -16,6 +16,10 @@ Do not modify another repository or any directory outside the active project wit
 
 For a new platform login, follow the [scoped PAT and permissions guide](references/authentication.md). Before setting up or changing any token, show its target and required versus optional permissions, and wait for the user to choose. Reuse a working login for the exact instance; do not replace credentials or widen permissions automatically.
 
+## Prefer Git for Git work
+
+Use Git for local history, diffs, branches and authorized commits, and for authorized remote Git operations such as fetch and push. Use the platform CLI or API only when the requested operation needs platform data or actions, such as reading a private Issue, opening a PR, or checking CI. If Git transport already works and the task ends at push, do not require platform API credentials. Offer the browser as a fallback for platform operations without claiming to have performed or verified them. The normal approval boundaries still apply.
+
 ## Platform selection
 
 For a Gitea task, follow the [Gitea preview](references/gitea.md) in place of the GitHub-specific repository, Issue, PR, and Actions instructions below; keep the shared development and authorization rules. If the intended platform or target is ambiguous, ask before connecting. Do not treat a configured default as authorization. GitLab is planned but not yet supported by this Skill.
