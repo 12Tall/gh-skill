@@ -1,4 +1,6 @@
-# 多平台兼容：首版需求
+# 多平台兼容：需求与调研记录
+
+当前只保留 GitHub 和 Gitea 预览。以下多平台范围是历史计划，不代表发布承诺；GitLab 及其他平台暂停。
 
 ## 范围
 
@@ -18,9 +20,15 @@
 
 - 四种环境分别验收同仓库和已有 Fork 两种流程。没有真实验收的环境标为预览；可先发布已通过的环境，全部实测后再宣布四种环境正式支持。
 - 模拟结果不算真实平台通过。访问云实例、搭建临时自建实例、创建或更新真实测试资源前，先确认范围和授权。
-- 首个实施和验收目标为官方 Gitea Cloud。其他环境的后续顺序暂未确认。
+- `gitea.com` 已验收同仓库普通 PR，不等同于官方 Gitea Cloud 验收。GitLab 仅做过公开资料调研，不进入实施。
 
-## Gitea 官方资料调研（尚未连实例验收）
+## GitLab 官方资料调研（尚未验收实例）
+
+- [Token 权限](https://docs.gitlab.com/security/tokens/access_token_scopes/)说明 `read_api` 授予 Token 范围内的只读 API 访问；用户、群组和项目 Token 的资源范围不同。
+- [`glab api`](https://docs.gitlab.com/cli/api/)可显式指定 `--hostname`；[MR API](https://docs.gitlab.com/api/merge_requests/)提供 MR 当前 head、`head_pipeline` 和 MR 专属 pipeline 列表。用 MR 关联证据核对当前修订，不拿分支的最新 pipeline 代替。
+- [Merged results pipeline](https://docs.gitlab.com/ci/pipelines/merged_results_pipelines/)使用临时合并提交，pipeline SHA 可能不等于源分支 SHA。若不能证明该运行属于当前 MR 修订，标记归属未确认，不报通过。
+
+## Gitea 调研与部分验收
 
 - [正式发布版 `tea v0.16.0`](https://gitea.com/gitea/tea/releases/tag/v0.16.0) 的源码确认有 `--head <user>:<branch>`、`--draft` 和 Actions runs 列表。列表有事件、状态等筛选，但没有 `head_sha` 筛选参数；首版验收应确认客户端能按 SHA 匹配，否则使用已确认支持该参数的 Gitea API，不能拿分支最新运行代替。当前机器未找到 `tea`，这只是源码核对，不是命令或实例验收。
 
