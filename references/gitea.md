@@ -26,4 +26,6 @@ In a same-repository workflow, use the verified repository as both source and de
 
 ## After creation: read-only checks
 
+If the instance has no available runner, leave Actions execution unconfigured and say so; if availability is unverified, say it is unconfirmed. An empty runner list alone does not rule out on-demand hosted runners. If the user wants to add a runner, remind them to update this Skill's Gitea guidance and verify a real run on the intended instance before considering it supported. Do not install or register a runner by default.
+
 Read back the PR from the upstream and report its URL and current head SHA. Use only runs or commit statuses attributable to that PR and revision. For Actions, prefer PR-linked run evidence; if available and authorized, Gitea's repository runs API supports `head_sha`. A push run and a PR run can share a SHA, and a Fork may have its own runs: do not substitute the latest branch run or an unrelated Fork run. Report passing, failing, running, or no checks observed; identify ambiguous attribution instead of guessing. Do not rerun, trigger, cancel, merge, edit, or push a fix as part of checking CI.

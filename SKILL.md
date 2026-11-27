@@ -22,7 +22,7 @@ Use Git for local history, diffs, branches and authorized commits, and for autho
 
 ## Platform selection
 
-For a Gitea task, follow the [Gitea preview](references/gitea.md) in place of the GitHub-specific repository, Issue, PR, and Actions instructions below; keep the shared development and authorization rules. If the intended platform or target is ambiguous, ask before connecting. Do not treat a configured default as authorization. GitLab is planned but not yet supported by this Skill.
+For a Gitea task, follow the [Gitea preview](references/gitea.md) in place of the GitHub-specific repository, Issue, PR, and Actions instructions below; keep the shared development and authorization rules. If the intended platform or target is ambiguous, ask before connecting. Do not treat a configured default as authorization. For GitLab, only the [read-only preview, token verification, and runner guidance](references/gitlab.md) are available; do not use GitHub or Gitea commands or claim broader GitLab support.
 
 ## Everyday GitHub commands
 
@@ -61,6 +61,10 @@ Read the issue and repository guidance. Define how to verify the goal, then make
 To open a draft, use `gh pr create -R "$repo" --base "$base" --head "$branch" --title "$title" --body-file "$pr_body_file" --draft`. Include the issue link, summary, and checks actually run. Check CI with `gh pr checks` and report the PR URL and CI status separately; don't claim pending checks passed. Merging and production deployment always require separate confirmation.
 
 If CI fails after opening a requested draft PR, inspect the logs. If the failure is clearly caused by the current change, make at most one local follow-up fix and validate it. Ask for explicit approval before committing the fix; if approved and pushing is authorized, push to the same branch and report the updated CI status. If the failure is unrelated or unclear, local validation fails, or the fix would require changing Actions configuration, permissions, or secrets, stop and report instead. A request to investigate CI alone is read-only unless the user explicitly requests a change.
+
+## CI runner availability
+
+When the target has no built-in or otherwise authorized runner available, leave runner-dependent capabilities unconfigured and explain why they are unavailable. If runner availability is unknown, report it as unconfirmed rather than inferring it from an empty list. Existing CI records may still be read when authorized. Do not install, register, or substitute a runner automatically. If the user wants runner support, explain that this Skill's platform guidance must be updated and validated on the intended instance before claiming support; ask for approval before changing files or configuring infrastructure outside the active project.
 
 ## GitHub Actions
 

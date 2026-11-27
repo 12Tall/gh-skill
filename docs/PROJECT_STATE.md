@@ -2,11 +2,12 @@
 
 ## 当前主线
 
-暂无进行中的实施任务。保留 GitHub 现有功能和 Gitea 预览（不视为正式支持）；GitLab 及其他平台的接入与验收暂停。
+保留 GitHub 现有功能、Gitea 预览和 GitLab.com 有限只读预览。GitLab 写入、自建实例和其他平台暂缓。
 
 先前讨论的范围与证据见[多平台调研记录](MULTI_PLATFORM.md)。
 
-- **待收尾：**草稿测试已收尾；本轮 Skill 规则和验收文档尚未提交。
+- **待收尾：**经用户确认后，提交 runner 规则和 GitLab 只读验收指南。
+- **GitLab.com：**现有 PAT 登录、私有项目元数据读取、官方公开项目的 Issue、MR 和合并结果流水线查询已验收。仅含 `read_api` 的 PAT、MR 写入和 runner 尚未验收。
 - **已验收：**`gitea.com` 私有仓库元数据及 Issue、PR、Actions 只读接口；SSH 推送同仓库分支并用 `tea v0.16.0` 创建普通 PR。API 回读确认源分支、目标 `master` 和 head SHA。测试 PR 已关闭、未合并，测试分支保留。
 - **草稿实测：**复用已有提交，SSH 推送独立分支后，`tea --draft` 创建同仓库 PR #2；API 确认是草稿且不可合并。测试 PR 已关闭、未合并，测试分支保留。
 - **未验收：**真实 CI 运行及归属、Fork、官方 Gitea Cloud 和自建 Gitea。未安装或注册 runner，未上传测试 workflow。
